@@ -8,6 +8,7 @@ const reqStr = {
 
 const PortfolioSchema = new Schema({
   title: reqStr,
+  desc: reqStr,
   attachment: reqStr,
   ios_link: String,
   android_link: String,
