@@ -8,14 +8,13 @@ const reqStr = {
 
 const PortfolioSchema = new Schema({
   title: reqStr,
-  overview: reqStr,
   attachment: reqStr,
-  ios_link: reqStr,
-  android_link: reqStr,
-  validating_the_problem: reqStr,
-  solution: reqStr,
-  overflow: reqStr,
+  ios_link: String,
+  android_link: String,
+  web_link: String,
   logo: reqStr,
+  primary_color: reqStr,
+  main_color: reqStr,
 });
 
 module.exports =
