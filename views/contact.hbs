@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333;
+      background-color: #f4f4f4; padding: 20px; } .container { max-width: 600px;
+      margin: auto; background-color: #ffffff; padding: 20px; border-radius:
+      8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); } .logo { display: block;
+      margin: 0 auto 20px auto; max-width: 150px; } h1 { color: #444444;
+      font-size: 24px; text-align: center; margin-bottom: 20px; } p { font-size:
+      16px; margin-bottom: 10px; } strong { color: #555555; } .description {
+      margin-top: 15px; padding: 10px; background-color: #f9f9f9; border-left:
+      4px solid #007BFF; font-style: italic; } ul { padding-left: 20px;
+      margin-bottom: 10px; } li { margin-bottom: 5px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Add your logo here -->
+      <img
+        src="https://firebasestorage.googleapis.com/v0/b/spms-91c73.appspot.com/o/AppSpotLogo.png?alt=media&token=a655524a-f21b-43a4-b691-4ac8cff8ea1e"
+        alt="Company Logo"
+        class="logo"
+      />
+      <h1>Contact Us Form Submission</h1>
+      <p><strong>Name:</strong> {{name}}</p>
+      <p><strong>Email:</strong> {{email}}</p>
+      <p><strong>Purpose of Contact:</strong></p>
+      <ul>
+        {{#each purpose}}
+          <li>{{this}}</li>
+        {{/each}}
+      </ul>
+      <p><strong>Description:</strong></p>
+      <p class="description">{{description}}</p>
+    </div>
+  </body>
+</html>

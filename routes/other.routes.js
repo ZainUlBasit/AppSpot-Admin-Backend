@@ -8,7 +8,13 @@ const { sendMail } = require("../utils/sendEmailUtil");
 // Create a new portfolio entry
 router.post("/send-email", async (req, res) => {
   try {
-    const emailSend = await sendMail("zainulbasit486@gmail.com", 1234);
+    const emailSend = await sendMail(
+      req.body.reciever_email,
+      req.body.sender_email,
+      req.body.name,
+      req.body.purpose,
+      req.body.desc
+    );
     return successMessage(res, emailSend, "Email sended successfully");
   } catch (error) {
     return createError(res, 400, error.message);

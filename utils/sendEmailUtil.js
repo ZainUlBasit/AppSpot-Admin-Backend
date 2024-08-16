@@ -1,30 +1,48 @@
 const nodemailer = require("nodemailer");
+const hbs = require("nodemailer-express-handlebars");
+const path = require("path");
 require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
   port: 587,
-  //   secure: false, // Use `true` for port 465, `false` for all other ports
   auth: {
     user: process.env.EmailName,
     pass: process.env.EmailPass,
   },
 });
 
-// async..await is not allowed in global scope, must use a wrapper
-const sendMail = async (email, otp = 1234) => {
+// Set up handlebars as the template engine
+const handlebarOptions = {
+  viewEngine: {
+    extName: ".hbs",
+    partialsDir: path.resolve("./views/"),
+    defaultLayout: false,
+  },
+  viewPath: path.resolve("./views/"),
+  extName: ".hbs",
+};
+
+transporter.use("compile", hbs(handlebarOptions));
+
+// async function to send email
+const sendMail = async (email, sender_email, name, purpose, description) => {
   try {
-    // send mail with defined transport object
     const info = await transporter.sendMail({
       from: {
         name: "AppSpot Solutions",
         address: process.env.EmailName,
-      }, // sender address
-      to: "zainulbasit486@gmail.com", // list of receivers
-      subject: "Physio Experts Admin Verification ✔", // Subject line
-      text: "Otp Verification", // plain text body
-      html: `<b>Your OTP is ${otp}</b>`, // html body
+      },
+      to: email,
+      subject: "Contact Us Form Submission ✔",
+      template: "contact", // Use 'contact' as the template name (without extension)
+      context: {
+        name, // Pass the name variable
+        email: sender_email, // Pass the email variable
+        purpose, // Pass the purpose variable
+        description, // Pass the description variable
+      },
     });
     return true;
   } catch (error) {
