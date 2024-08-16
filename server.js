@@ -9,6 +9,7 @@ const http = require("http");
 
 // Routes
 const portfolioRoutes = require("./routes/portfolio.routes"); // Adjust the path according to your file structure
+const otherRoutes = require("./routes/other.routes"); // Adjust the path according to your file structure
 const { default: mongoose } = require("mongoose");
 
 const PORT = process.env.PORT;
@@ -110,6 +111,7 @@ io.on("connection", (socket) => {
 });
 
 app.use("/api/portfolio", portfolioRoutes);
+app.use("/api", otherRoutes);
 
 app.use("*", (req, res) => res.status(404).send("Not Found!"));
 app.use((req, res, error) => {
