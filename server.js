@@ -33,27 +33,45 @@ mongoose
     console.log(err);
   });
 
+// List of allowed origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://appspot.com.pk",
+  "https://www.appspotsoftwares.com",
+];
+
 // CORS middleware configuration
 app.use(
   cors({
-    origin: "*", // Allow all URLs
-    credentials: true,
+    origin: function (origin, callback) {
+      // Check if the incoming request's origin is in the allowedOrigins array
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Allow credentials such as cookies and authorization headers
   })
 );
 
-// Allow all CORS requests
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Credentials", true);
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
+// Socket.io functionalities
+const io = new Server(server, {
+  cors: {
+    origin: function (origin, callback) {
+      // Check if the incoming request's origin is in the allowedOrigins array
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST"], // Specify methods allowed for CORS
+    credentials: true, // Allow credentials for Socket.io
+  },
 });
 
-// Socket.io functionalities
-const io = new Server(server, { cors: { origin: "*" } }); // Allow all URLs for Socket.io
 app.io = io;
 app.set("io", io);
 global.io = io;
