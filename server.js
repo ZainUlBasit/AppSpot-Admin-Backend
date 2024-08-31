@@ -1,16 +1,15 @@
 const express = require("express");
 const cors = require("cors");
-// const {ConnectionOptions} = require("mongoose");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const { Server } = require("socket.io");
 const http = require("http");
+const { default: mongoose } = require("mongoose");
 
 // Routes
-const portfolioRoutes = require("./routes/portfolio.routes"); // Adjust the path according to your file structure
-const otherRoutes = require("./routes/other.routes"); // Adjust the path according to your file structure
-const { default: mongoose } = require("mongoose");
+const portfolioRoutes = require("./routes/portfolio.routes");
+const otherRoutes = require("./routes/other.routes");
 
 const PORT = process.env.PORT;
 const SOCKET_SECRET_KEY = process.env.SOCKET_SECRET_KEY;
@@ -22,41 +21,29 @@ const server = http.createServer(app);
 app.use(cookieParser());
 app.use(express.json());
 
+// Connect to MongoDB
 mongoose
   .connect(process.env.mongooseUrl, {
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log("database connected");
+    console.log("Database connected");
   })
   .catch((err) => {
     console.log(err);
   });
 
+// CORS middleware configuration
 app.use(
   cors({
-    origin: true,
+    origin: "*", // Allow all URLs
     credentials: true,
   })
 );
 
-// app.use((req, res, next) => {
-//   // res.header('Access-Control-Allow-Origin', "*");
-//   // res.header('Access-Control-Allow-Credentials', true);
-//   // res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//   const app_secret = req?.headers["app_secret"];
-//   const token = req.query?.token;
-//   console.log("app_secret : ", app_secret);
-//   if (token != PAYPAL_TOKEN && app_secret != APP_ID)
-//     return createError(res, 401, "App is Unauthorized!");
-//   // const app_id = jwt.verify(app_secret, PRIVATE_KEY)
-//   // CODE SHOULD BE CONTINUED : ONLY APP_ID IS LEFT AND THEN JWT TOKEN CREATION IS TO BE DONE
-//   next();
-// });
-// we should have cors object specified here,
-
-app.use(function (req, res, next) {
-  console.log(req.originalUrl);
+// Allow all CORS requests
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", true);
   res.header(
     "Access-Control-Allow-Headers",
@@ -65,19 +52,14 @@ app.use(function (req, res, next) {
   next();
 });
 
-// socket io functionalities;
-
-const io = new Server(server, { cors: { origin: true } }); // socket io server!
-// const io = require("socket.io").
+// Socket.io functionalities
+const io = new Server(server, { cors: { origin: "*" } }); // Allow all URLs for Socket.io
 app.io = io;
 app.set("io", io);
 global.io = io;
 
-function socketEmit(socket, event, data) {
-  socket.emit(event, data);
-}
 io.on("connection", (socket) => {
-  console.log("connection established!");
+  console.log("Connection established!");
   try {
     const { secretkey, token } = socket.handshake.headers;
     const { _doc: user } = jwt.verify(token, ACCESS_SECRET_KEY);
@@ -85,6 +67,7 @@ io.on("connection", (socket) => {
     console.log(token);
     if (secretkey != SOCKET_SECRET_KEY || !token || !user)
       return socket.disconnect();
+
     switch (user.role) {
       case 1:
         console.log("===============Admin SOCKET JOINED==============");
@@ -98,9 +81,8 @@ io.on("connection", (socket) => {
         console.log("===============Patient SOCKET JOINED==============");
         socket.join(["/patient-" + user.patientId._id]);
         break;
-
       default:
-        console.log("no other then company room joined!");
+        console.log("No other than company room joined!");
         socket.join(`/visitor`);
         break;
     }
