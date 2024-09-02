@@ -38,6 +38,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://appspot.com.pk",
+  "https://www.appspot.com.pk",
   "https://www.appspotsoftwares.com",
   "https://app-spot-admin.vercel.app",
 ];
