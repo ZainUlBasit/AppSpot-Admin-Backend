@@ -42,6 +42,7 @@ const allowedOrigins = [
   "https://www.appspotsoftwares.com",
   "https://app-spot-admin.vercel.app",
   "http://localhost:5176",
+  "https://appspot-portfolio.vercel.app",
 ];
 
 // CORS middleware configuration
